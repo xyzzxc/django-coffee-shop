@@ -5,6 +5,7 @@ from django.http import HttpResponse
 # Create your views here.
 from coffees.forms import CoffeeForm
 from coffees.models import Coffee
+from utils.forms import DeleteConfirmFrom
 
 
 def index(request):
@@ -34,3 +35,14 @@ def edit(request, pk):
         messages.success(request, '更新成功')
         return redirect('coffees:index')
     return render(request, 'coffees/edit.html', {'form': form})
+
+
+def delete(request, pk):
+    coffee = get_object_or_404(Coffee, pk=pk)
+    form = DeleteConfirmFrom(request.POST or None)
+    if form.is_valid() and form.cleaned_data['check']:
+        coffee.delete()
+        messages.success(request, '刪除成功')
+        return redirect('coffees:index')
+    return render(request, 'coffees/delete.html', {'form': form, 'coffee': coffee})
+
