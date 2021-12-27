@@ -18,9 +18,19 @@ def show(request, pk):
 
 
 def add(request):
-    form = CoffeeForm(request.POST, None)
+    form = CoffeeForm(request.POST or None)
     if form.is_valid():
         form.save()
         messages.success(request, '新增成功')
         return redirect('coffees:index')
     return render(request, 'coffees/add.html', {'form': form})
+
+
+def edit(request, pk):
+    coffee = get_object_or_404(Coffee, pk=pk)
+    form = CoffeeForm(request.POST or None, instance=coffee)
+    if form.is_valid():
+        form.save()
+        messages.success(request, '更新成功')
+        return redirect('coffees:index')
+    return render(request, 'coffees/edit.html', {'form': form})
